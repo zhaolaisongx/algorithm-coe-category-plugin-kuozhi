@@ -1,0 +1,33 @@
+admin_course_category_test:
+    path:     /admin/category_test_plugin/category
+    defaults: { _controller: CategoryTestPlugin:Default:embed, group: 'test', layout: 'admin/layout.html.twig' }
+
+admin_category_test_create:
+    path: /admin/category_test_plugin/category/create
+    defaults: { _controller: CategoryTestPlugin:Default:create }
+
+admin_category_test_checkcode:
+    path:  /admin/category_test_plugin/category/checkcode
+    defaults: { _controller: CategoryTestPlugin:Default:checkCode }
+    permissions: [admin_course_category_test_manage]
+
+admin_category_test_edit:
+    path:  /admin/category_test_plugin/category/{id}/edit
+    defaults: { _controller: CategoryTestPlugin:Default:edit }
+    permissions: [admin_course_category_test_manage]
+
+admin_category_test_delete:
+    path:  /admin/category_test_plugin/category/{id}/delete
+    defaults: { _controller: CategoryTestPlugin:Default:delete }
+    methods: [POST]
+
+admin_category_test_upload:
+    path: /admin/category_test_plugin/category/uploadfile
+    defaults: { _controller: CategoryTestPlugin:Default:uploadFile }
+    methods: [POST]
+    permissions: [admin_course_category_test_manage]
+
+admin_category_test_sort:
+    path:  /admin/category_test_plugin/category/sort
+    defaults: { _controller: CategoryTestPlugin:Default:sort }
+    methods: [POST]

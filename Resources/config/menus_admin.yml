@@ -1,0 +1,32 @@
+# 一个完整的permission配置如下：
+# admin_user_manage:
+#   name: 用户管理
+#   children:               //可选
+#   mode:                   //可选 none, modal, capsules（只有在tabs可用）
+#   group:                  //可选 内置: topBtn, capsule, 也可以自定义
+#   router_name: admin_user //可选
+#   router_params:          //可选
+#   blank:                  //可选
+#   visible:                //可选
+#   icon:                   //可选
+#   data:                   //可选
+#   before:                 //可选 菜单出现位置在同级的某个菜单之前
+#   after:                  //可选 菜单出现位置在同级的某个菜单之后
+#   disable:                //角色管理分配权限默认开启不用选中
+
+admin_course_category_test:
+    name: 分类嵌套模型
+    parent: admin_course
+    children:
+        admin_course_category_test_manage:
+            name: admin.course.category.course_category_tab
+            router_name: admin_course_category_test
+            disable: true
+            children:
+                admin_category_test_create:
+                    name: 创建分类
+                    router_params:
+                        groupId: (group.id)
+                    router_params_context: 1
+                    group: topBtn
+                    mode: modal
