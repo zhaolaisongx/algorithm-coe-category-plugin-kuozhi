@@ -21,6 +21,20 @@ class CategoryTestDaoImpl extends GeneralDaoImpl implements CategoryTestDao
         return $this->db()->fetchAll($sql, array($groupId)) ?: array();
     }
 
+    public function findByGroupIdOrderByLeftNumASC($groupId)
+    {
+        $sql = "SELECT * FROM {$this->table()} WHERE groupId = ? ORDER BY leftNum ASC";
+
+        return $this->db()->fetchAll($sql, array($groupId)) ?: array();
+    }
+
+    public function getLastCategory()
+    {
+        $sql = "SELECT * FROM {$this->table()} ORDER BY rightNum DESC";
+
+        return $this->db()->fetchAssoc($sql) ?: null;
+    }
+
     public function findByGroupIdAndOrgId($groupId, $orgId)
     {
         $sql = "SELECT * FROM {$this->table()} WHERE groupId = ? AND orgId =?  ORDER BY weight ASC";
@@ -55,6 +69,18 @@ class CategoryTestDaoImpl extends GeneralDaoImpl implements CategoryTestDao
         $sql = "SELECT COUNT(*) FROM {$this->table()} WHERE  parentId = ?";
 
         return $this->db()->fetchColumn($sql, array($parentId));
+    }
+
+    public function refreshCategoryLeftNumByRightNum($rightNum)
+    {
+        $sql = "UPDATE {$this->table} set leftNum = leftNum + 2 WHERE leftNum > ?;";
+        $this->db()->executeQuery($sql, array($rightNum));
+    }
+
+    public function refreshCategoryRightNumByRightNum($rightNum)
+    {
+        $sql = "UPDATE {$this->table} set rightNum = rightNum + 2 WHERE rightNum > ?;";
+        $this->db()->executeQuery($sql, array($rightNum));
     }
 
     public function findByIds(array $ids)

@@ -31,4 +31,12 @@ interface CategoryTestDao
     public function findByIds(array $ids);
 
     public function findAll();
+
+    public function findByGroupIdOrderByLeftNumASC($groupId);
+
+    public function getLastCategory();
+
+    public function refreshCategoryLeftNumByRightNum($rightNum);
+
+    public function refreshCategoryRightNumByRightNum($rightNum);
 }

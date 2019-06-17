@@ -112,10 +112,8 @@ class CategoryTestServiceImpl extends BaseService implements CategoryTestService
 
     public function getCategoryStructureTree($groupId)
     {
-        /*var_dump($this->getCategoryTree($groupId));
-        var_dump(TreeToolkit::makeTree($this->getCategoryTree($groupId), 'weight'));
-        die();*/
-        return TreeToolkit::makeTree($this->getCategoryTree($groupId), 'weight');
+        return $this->getCategoryTree($groupId);
+        /*return TreeToolkit::makeTree($this->getCategoryTree($groupId), 'weight');*/
     }
 
     public function sortCategories($ids)
@@ -143,6 +141,17 @@ class CategoryTestServiceImpl extends BaseService implements CategoryTestService
         } else {
             return $this->getCategoryTestDao()->findByGroupId($group['id']);
         }
+    }
+
+    public function findCategoriesOrderByLeftNumASC($groupId)
+    {
+        $group = $this->getGroup($groupId);
+
+        if (empty($group)) {
+            $this->createNewException(CategoryException::NOTFOUND_GROUP());
+        }
+
+        return $this->getCategoryTestDao()->findByGroupIdOrderByLeftNumASC($group['id']);
     }
 
     public function findAllCategoriesByParentId($parentId)
@@ -294,8 +303,33 @@ class CategoryTestServiceImpl extends BaseService implements CategoryTestService
 
         $category = $this->setCategoryOrg($category);
         $category = $this->getCategoryTestDao()->create($category);
+        if ($category['parentId'] < 1) {
+            $lastCategory = $this->getLastCategory();
+            $pointNum['leftNum'] = (empty($lastCategory['rightNum']) ? 0 : $lastCategory['rightNum']) + 1;
+            $pointNum['rightNum'] = $pointNum['leftNum'] + 1;
+            $this->updateCategory($category['id'], $pointNum);
+        } else {
+            $parentCategory = $this->getCategory($category['parentId']);
+            $parentPointNum['rightNum'] =  $parentCategory['rightNum'] + 2;
+            $currentPointNum['leftNum'] = $parentCategory['rightNum'];
+            $currentPointNum['rightNum'] = $parentCategory['rightNum'] + 1;
+            $this->updateCategoryPointNumByRightNum($parentCategory['rightNum']);
+            $this->updateCategory($category['id'], $currentPointNum);
+            $this->updateCategory($parentCategory['id'], $parentPointNum);
+        }
 
         return $category;
+    }
+
+    public function updateCategoryPointNumByRightNum($rightNum)
+    {
+        $this->getCategoryTestDao()->refreshCategoryLeftNumByRightNum($rightNum);
+        $this->getCategoryTestDao()->refreshCategoryRightNumByRightNum($rightNum);
+    }
+
+    protected function getLastCategory()
+    {
+        return $this->getCategoryTestDao()->getLastCategory();
     }
 
     protected function setCategoryOrg($category)
@@ -332,7 +366,7 @@ class CategoryTestServiceImpl extends BaseService implements CategoryTestService
             $this->createNewException(CategoryException::NOTFOUND_CATEGORY());
         }
 
-        $fields = ArrayToolkit::parts($fields, array('description', 'name', 'code', 'weight', 'parentId', 'icon'));
+        $fields = ArrayToolkit::parts($fields, array('leftNum', 'rightNum', 'description', 'name', 'code', 'weight', 'parentId', 'icon'));
 
         if (empty($fields)) {
             $this->createNewException(CommonException::ERROR_PARAMETER());
