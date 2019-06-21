@@ -43,6 +43,12 @@ class CategoryTestServiceImpl extends BaseService implements CategoryTestService
         return $this->getCategoryTestDao()->getByCode($code);
     }
 
+    /*ForCustomOnly*/
+    /*好处：
+    1. 所有数据筛选出来以后，数据处理简单化  少了一堆方法
+    2. 单个节点数据筛选方便
+    3.
+    */
     private function prepareTreeData($categories)
     {
         $position = array();
@@ -76,6 +82,7 @@ class CategoryTestServiceImpl extends BaseService implements CategoryTestService
 
         return $categories;
     }
+    /*END*/
 
     public function getCategoryTree($groupId)
     {
@@ -303,6 +310,7 @@ class CategoryTestServiceImpl extends BaseService implements CategoryTestService
 
         $category = $this->setCategoryOrg($category);
         $category = $this->getCategoryTestDao()->create($category);
+        /*ForCustomOnly*/
         if ($category['parentId'] < 1) {
             $lastCategory = $this->getLastCategory();
             $pointNum['leftNum'] = (empty($lastCategory['rightNum']) ? 0 : $lastCategory['rightNum']) + 1;
@@ -326,6 +334,13 @@ class CategoryTestServiceImpl extends BaseService implements CategoryTestService
         $this->getCategoryTestDao()->refreshCategoryLeftNumByRightNum($rightNum);
         $this->getCategoryTestDao()->refreshCategoryRightNumByRightNum($rightNum);
     }
+
+    public function updateCategoryPointNumByRightNumWhenDel($rightNum, $num)
+    {
+        $this->getCategoryTestDao()->refreshCategoryLeftNumByRightNumWhenDel($rightNum, $num);
+        $this->getCategoryTestDao()->refreshCategoryRightNumByRightNumWhenDel($rightNum, $num);
+    }
+    /*end*/
 
     protected function getLastCategory()
     {
@@ -390,12 +405,15 @@ class CategoryTestServiceImpl extends BaseService implements CategoryTestService
             $this->createNewException(CategoryException::NOTFOUND_CATEGORY());
         }
 
-        $ids = $this->findCategoryChildrenIds($id);
+        /*$ids = $this->findCategoryChildrenIds($id);
         $ids[] = $id;
 
         foreach ($ids as $id) {
             $this->getCategoryTestDao()->delete($id);
-        }
+        }*/
+        $this->getCategoryTestDao()->deleteCategoryByLeftAndRight($category['leftNum'], $category['rightNum']);
+        $this->updateCategoryPointNumByRightNumWhenDel($category['rightNum'], $category['rightNum'] - $category['leftNum'] + 1);
+
     }
 
     public function getGroup($id)

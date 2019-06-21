@@ -39,4 +39,10 @@ interface CategoryTestDao
     public function refreshCategoryLeftNumByRightNum($rightNum);
 
     public function refreshCategoryRightNumByRightNum($rightNum);
+
+    public function refreshCategoryLeftNumByRightNumWhenDel($rightNum, $num);
+
+    public function refreshCategoryRightNumByRightNumWhenDel($rightNum, $num);
+
+    public function deleteCategoryByLeftAndRight($leftNum, $rightNum);
 }

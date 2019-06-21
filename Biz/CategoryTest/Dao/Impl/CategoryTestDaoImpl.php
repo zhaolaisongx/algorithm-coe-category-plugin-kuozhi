@@ -83,6 +83,25 @@ class CategoryTestDaoImpl extends GeneralDaoImpl implements CategoryTestDao
         $this->db()->executeQuery($sql, array($rightNum));
     }
 
+    public function refreshCategoryLeftNumByRightNumWhenDel($rightNum, $num)
+    {
+        $sql = "UPDATE {$this->table} set leftNum = leftNum - ? WHERE leftNum > ?;";
+        $this->db()->executeQuery($sql, array($num, $rightNum));
+    }
+
+    public function refreshCategoryRightNumByRightNumWhenDel($rightNum, $num)
+    {
+        $sql = "UPDATE {$this->table} set rightNum = rightNum - ? WHERE rightNum > ?;";
+        $this->db()->executeQuery($sql, array($num, $rightNum));
+    }
+
+    public function deleteCategoryByLeftAndRight($leftNum, $rightNum)
+    {
+        $sql = "DELETE FROM {$this->table} WHERE leftNum >= ? AND rightNum <= ? ";
+
+        return $this->db()->executeUpdate($sql, array($leftNum, $rightNum));
+    }
+
     public function findByIds(array $ids)
     {
         $ids = array_filter(array_unique($ids));
