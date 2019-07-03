@@ -12,7 +12,7 @@ class InitCommand extends BaseCommand
 {
     protected function configure()
     {
-        $this->setName('project_plan:init');
+        $this->setName('category_test:init');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
