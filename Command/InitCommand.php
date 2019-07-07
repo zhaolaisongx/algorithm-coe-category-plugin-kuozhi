@@ -51,7 +51,7 @@ class InitCommand extends BaseCommand
 
     protected function getCategoryTestService()
     {
-        return ServiceKernel::instance()->getBiz()->service('CategoryTestPlugin:CategoryTestService');
+        return ServiceKernel::instance()->getBiz()->service('CategoryTestPlugin:CategoryTest:CategoryTestService');
     }
 
 }
